@@ -1,12 +1,13 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { inject, ref } from 'vue'
   import { RouterLink  } from 'vue-router'
 
   import TodoItem from './../components/TodoItem.vue'
 
   import type { Todo } from './../types'
+import { TODO_LIST } from '@/provider';
 
-  let items = ref<Array<Todo>>(JSON.parse(localStorage.getItem('todoList') || '[]'))
+  let items = ref<Array<Todo>>(inject(TODO_LIST) || [])
 
   const removeTodo =  (idToRemove: string) => {
     const tmp = items.value.filter(({ id }: Todo) => {
@@ -14,8 +15,6 @@
     })
 
     items.value = tmp;
-
-    localStorage.setItem('todoList', JSON.stringify(items.value));
   }
 </script>
 

@@ -1,8 +1,9 @@
 <script setup lang="ts">
   import { useRoute, RouterLink, useLink } from 'vue-router'
-  import { ref } from 'vue'
+  import { ref, inject } from 'vue'
   import { v4 as uuid4 } from 'uuid'
   import type { Todo } from './../types'
+import { TODO_LIST } from '@/provider';
 
   const route = useRoute()
 
@@ -10,25 +11,23 @@
 
   const { navigate } = useLink({ to: "/" });
 
-  const todos: Array<Todo> = JSON.parse(localStorage.getItem('todoList') || '[]');
+  const todos: Array<Todo> | undefined = inject(TODO_LIST)
 
   if (route.params.id !== 'new') {
-    name.value = todos.find(({ id }) => id === route.params.id)?.name || '';
+    name.value = todos?.find(({ id }) => id === route.params.id)?.name || '';
   }
 
   const saveForm = () => {
     
-    const index = todos.findIndex(({ id }) => id === route.params.id);
+    const index = todos?.findIndex(({ id }) => id === route.params.id) || -1;
 
     if (index == -1) {
-      todos.push({ name: name.value, id: uuid4()})
+      todos?.push({ name: name.value, id: uuid4()})
     }
 
-    if (index >= 0) {
+    if (index >= 0 && !!todos) {
       todos[index].name = name.value;
     }
-
-    localStorage.setItem('todoList', JSON.stringify(todos));
   
     navigate()
   }
